@@ -2,6 +2,7 @@
 // Adafruit VL53L1X
 
 #include <WiFi.h>
+#include <esp_wifi.h>
 #include <AsyncUDP.h>
 #include "Adafruit_VL53L1X.h"
 #include "../wifi_info.h"
@@ -18,6 +19,7 @@ Adafruit_VL53L1X tof = Adafruit_VL53L1X(TOF_PIN_XSHUT, TOF_PIN_INT);
 
 AsyncUDP udp;
 IPAddress hub(192, 168, 4, 1);
+String mac_address;
 
 void connectToWifi() {
   WiFi.mode(WIFI_STA);
@@ -30,11 +32,11 @@ void connectToWifi() {
   }
 }
 
-void sendPacket() {
+void sendPacket(String text) {
   AsyncUDPMessage msg;
-  msg.write((uint8_t*)"Hello\0", 6);
+  msg.write((uint8_t*)text.c_str(), text.length());
   udp.sendTo(msg, hub, udp_port);
-  Serial.println("Sent Hello via UDP");
+  Serial.println("Sent message via UDP");
 }
 
 void setup() {
@@ -102,7 +104,7 @@ void loop() {
   }
 
   if (millis() > lastSend + 5000) {
-    sendPacket();
+    sendPacket("Hello from " + WiFi.macAddress());
     lastSend = millis();
   }
 }
