@@ -97,7 +97,7 @@ void loop() {
       Serial.println(tof.vl_status);
       return;
     }
-    sendPacket("SRT:TOF\n" + WiFi.macAddress() + "\n" + distance);
+    sendPacket(MSG_PREFIX + MSG_TYPE_TOF + "\n" + WiFi.macAddress() + "\n" + distance);
 
     // data is read out, time for another reading!
     tof.clearInterrupt();
