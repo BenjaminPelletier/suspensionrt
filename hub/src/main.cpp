@@ -4,6 +4,8 @@
 #include <lvgl.h>
 #include "ui/ui.h"
 #include "ap.h"
+#include <esp_lcd_types.h>
+#include <esp_lcd_panel_ops.h>
 
 IPAddress my_ip_address;
 
@@ -23,6 +25,11 @@ void setup()
     log_i("SDK version: %s", ESP.getSdkVersion());
 
     smartdisplay_init();
+
+    // Un-invert colors
+    lv_display_t* display = lv_display_get_default();
+    const esp_lcd_panel_handle_t panel_handle = static_cast<esp_lcd_panel_handle_t>(display->user_data);
+    esp_lcd_panel_invert_color(panel_handle, false);
 
     __attribute__((unused)) auto disp = lv_disp_get_default();
     lv_disp_set_rotation(disp, LV_DISPLAY_ROTATION_270);
