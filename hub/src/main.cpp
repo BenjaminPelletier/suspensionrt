@@ -5,10 +5,10 @@
 #include <esp_lcd_types.h>
 #include <esp_lcd_panel_ops.h>
 #include "ui/ui.h"
-#include "ap.h"
-#include "server/server.h"
-
-IPAddress my_ip_address;
+#include "comms/ap.h"
+#include "comms/server/server.h"
+#include "comms/udp.h"
+#include "events.h"
 
 void setup()
 {
@@ -37,13 +37,16 @@ void setup()
 
     ui_init();
 
-    my_ip_address = init_ap();
+    init_ap();
+    IPAddress ip = get_my_ip_address();
     char text_buffer[16];
-    sprintf(text_buffer, "%d.%d.%d.%d", my_ip_address[0], my_ip_address[1], my_ip_address[2], my_ip_address[3]);
+    sprintf(text_buffer, "%d.%d.%d.%d", ip[0], ip[1], ip[2], ip[3]);
     lv_label_set_text(ui_lblStatus3, text_buffer);
+
     lv_obj_clear_flag(ui_imgLeftFrontWifi, LV_OBJ_FLAG_HIDDEN);
 
     init_server();
+    init_udp(onTimeOfFlight);
 }
 
 ulong next_millis;

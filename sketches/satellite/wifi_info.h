@@ -1,5 +1,5 @@
-#ifndef WIFI_INFO_H
-#define WIFI_INFO_H
+#ifndef SUSPENSIONRT_WIFI_INFO_H
+#define SUSPENSIONRT_WIFI_INFO_H
 
 const char* ssid = "SuspensionRT";
 const char* password = "springconstant";
