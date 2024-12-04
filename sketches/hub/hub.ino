@@ -10,7 +10,7 @@
 #include <ESPmDNS.h>
 #include <AsyncUDP.h>
 
-#include "../wifi_info.h"
+#include "../../wifi_info.h"
 
 typedef uint16_t length_t;
 

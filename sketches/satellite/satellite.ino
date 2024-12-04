@@ -5,7 +5,7 @@
 #include <esp_wifi.h>
 #include <AsyncUDP.h>
 #include "Adafruit_VL53L1X.h"
-#include "../wifi_info.h"
+#include "../../wifi_info.h"
 
 #define TOF_PIN_VIN 4
 #define TOF_PIN_GND 5
