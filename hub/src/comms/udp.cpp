@@ -1,17 +1,15 @@
 #include "udp.h"
 #include <Arduino.h>
 #include <AsyncUDP.h>
-#include "../events.h"
+#include "../common.h"
+#include "../satellites.h"
+#include "../wheels.h"
 
 AsyncUDP udp;
 
 const unsigned int udp_port = 31607;
 const String MSG_PREFIX = F("SRT:");
 const String MSG_TYPE_TOF = F("TOF");
-
-time_of_flight_callback_t on_time_of_flight;
-
-typedef uint16_t length_t;
 
 const length_t BUFFER_LENGTH = 255;
 char buffer[BUFFER_LENGTH];
@@ -23,16 +21,6 @@ enum UDPMessageType : uint8_t
 };
 
 const length_t MAC_ADDRESS_LENGTH = 17;
-
-struct Satellite
-{
-    char mac_address[18];
-    int last_distance;
-};
-
-const length_t MAX_SATELLITES = 8;
-Satellite satellites[MAX_SATELLITES];
-length_t n_satellites = 0;
 
 length_t scanLine(char *s, length_t s_length, char *buffer)
 {
@@ -69,7 +57,7 @@ UDPMessageType parseMessageType(char *line)
     return UDPMessageType::None;
 }
 
-void handleTimeOfFlight(uint8_t satellite, char *msg, length_t msg_length)
+void handleTimeOfFlight(mstime_t t, Satellite* satellite, char *msg, length_t msg_length)
 {
     length_t n_line = scanLine(msg, msg_length, buffer);
     if (n_line < 2) {
@@ -77,16 +65,14 @@ void handleTimeOfFlight(uint8_t satellite, char *msg, length_t msg_length)
         return;
     }
     int distance = atoi(buffer);
-    satellites[satellite].last_distance = distance;
-    on_time_of_flight(satellite, distance);
-    Serial.print("S");
-    Serial.print(satellite);
-    Serial.print(": ");
-    Serial.println(distance);
+    satellite->distance = distance;
+    satellite->t_report = t;
 }
 
 void onUDPPacket(AsyncUDPPacket packet)
 {
+    mstime_t t = millis();
+
     char *msg = (char *)packet.data();
     length_t n = packet.length(); // n is number of characters in msg (without any terminator)
     if (n > BUFFER_LENGTH - 1) {
@@ -115,38 +101,22 @@ void onUDPPacket(AsyncUDPPacket packet)
     n -= n_line;
 
     // Match sender to satellite
-    uint8_t s;
-    for (s = 0; s < n_satellites; s++) {
-        if (strcmp(satellites[s].mac_address, buffer) == 0) {
-            break;
-        }
-    }
-    if (s >= n_satellites) {
-        // We haven't seen this satellite before
-        if (s >= MAX_SATELLITES) {
-            // We've identified too many satellites; overwrite one
-            s -= 1;
-        }
-        n_satellites = s + 1;
-        for (uint8_t c = 0; c < MAC_ADDRESS_LENGTH + 1; c++) {
-            satellites[s].mac_address[c] = buffer[c];
-        }
-    }
+    Satellite* satellite = get_satellite_by_id(buffer);
+
+    // Assign satellite to wheel, if needed
+    maybe_assign_satellite_to_wheel(satellite);
 
     // Handle specific message types
     if (msg_type == UDPMessageType::TimeOfFlight) {
-        handleTimeOfFlight(s, msg, n);
+        handleTimeOfFlight(t, satellite, msg, n);
     }
 }
 
-void init_udp(time_of_flight_callback_t time_of_flight_handler)
+void init_udp()
 {
-    on_time_of_flight = time_of_flight_handler;
-
     udp.onPacket(onUDPPacket);
     if (!udp.listen(udp_port)) {
         log_e("UDP listening failed.");
-        while (1)
-            ;
+        while (1);
     }
 }
