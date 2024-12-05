@@ -18,14 +18,14 @@ void maybe_assign_satellite_to_wheel(Satellite* satellite) {
     uint8_t w = 0;
 
     // See if this satellite is already assigned to a wheel
-    for (uint8_t w = 0; w < N_WHEELS; w++) {
+    for (w = 0; w < N_WHEELS; w++) {
         if (wheels[w].satellite == satellite) {
             return;
         }
     }
 
     // See if any wheels are already associated (via ID) with this satellite
-    for (uint8_t w = 0; w < N_WHEELS; w++) {
+    for (w = 0; w < N_WHEELS; w++) {
         if (wheels[w].satellite == nullptr && strcmp(wheels[w].last_satellite_id, satellite->id) == 0) {
             break;
         }
@@ -33,10 +33,9 @@ void maybe_assign_satellite_to_wheel(Satellite* satellite) {
 
     if (w == N_WHEELS) {
         // See if any wheels do not yet have an associated satellite
-        for (uint8_t w = 0; w < N_WHEELS; w++) {
+        for (w = 0; w < N_WHEELS; w++) {
             if (wheels[w].last_satellite_id[0] == 0) {
-                wheels[w].satellite = satellite;
-                return;
+                break;
             }
         }
     }

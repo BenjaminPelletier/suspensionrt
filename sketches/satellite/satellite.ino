@@ -76,7 +76,7 @@ void setup() {
   Serial.println(F("Ranging started"));
 
   // Valid timing budgets: 15, 20, 33, 50, 100, 200 and 500ms!
-  tof.setTimingBudget(500);
+  tof.setTimingBudget(50);
   Serial.print(F("Timing budget (ms): "));
   Serial.println(tof.getTimingBudget());
 
