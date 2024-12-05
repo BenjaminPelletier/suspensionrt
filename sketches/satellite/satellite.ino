@@ -2,17 +2,17 @@
 // Adafruit VL53L1X
 
 #include <WiFi.h>
-#include <esp_wifi.h>
+//#include <esp_wifi.h>
 #include <AsyncUDP.h>
 #include "Adafruit_VL53L1X.h"
 #include "wifi_info.h"
 
-#define TOF_PIN_VIN 4
-#define TOF_PIN_GND 5
-#define TOF_PIN_SDA 6
-#define TOF_PIN_SCL 7
-#define TOF_PIN_INT 15
-#define TOF_PIN_XSHUT 16
+#define TOF_PIN_VIN -1
+#define TOF_PIN_GND 22
+#define TOF_PIN_SDA 19
+#define TOF_PIN_SCL 23
+#define TOF_PIN_INT 18
+#define TOF_PIN_XSHUT 5
 #define TOF_ADDRESS 0x29
 
 Adafruit_VL53L1X tof = Adafruit_VL53L1X(TOF_PIN_XSHUT, TOF_PIN_INT);
@@ -30,13 +30,14 @@ void connectToWifi() {
       delay(1000);
     }
   }
+  Serial.print("MAC address: ");
+  Serial.println(WiFi.macAddress());
 }
 
 void sendPacket(String text) {
   AsyncUDPMessage msg;
   msg.write((uint8_t*)text.c_str(), text.length());
   udp.sendTo(msg, hub, udp_port);
-  Serial.println("Sent message via UDP");
 }
 
 void setup() {
@@ -47,10 +48,14 @@ void setup() {
 
   Serial.println(F("suspensionrt/satellite"));
 
-  pinMode(TOF_PIN_GND, OUTPUT);
-  digitalWrite(TOF_PIN_GND, LOW);
-  pinMode(TOF_PIN_VIN, OUTPUT);
-  digitalWrite(TOF_PIN_VIN, HIGH);
+  if (TOF_PIN_GND >= 0) {
+    pinMode(TOF_PIN_GND, OUTPUT);
+    digitalWrite(TOF_PIN_GND, LOW);
+  }
+  if (TOF_PIN_VIN >= 0) {
+    pinMode(TOF_PIN_VIN, OUTPUT);
+    digitalWrite(TOF_PIN_VIN, HIGH);
+  }
 
   Wire.begin(TOF_PIN_SDA, TOF_PIN_SCL);
   if (!tof.begin(TOF_ADDRESS, &Wire)) {
@@ -75,11 +80,6 @@ void setup() {
   Serial.print(F("Timing budget (ms): "));
   Serial.println(tof.getTimingBudget());
 
-  /*
-  vl.VL53L1X_SetDistanceThreshold(100, 300, 3, 1);
-  vl.VL53L1X_SetInterruptPolarity(0);
-  */
-
   connectToWifi();
 }
 
@@ -89,17 +89,13 @@ void loop() {
   int16_t distance;
 
   if (tof.dataReady()) {
-    // new measurement for the taking!
     distance = tof.distance();
     if (distance == -1) {
-      // something went wrong!
       Serial.print(F("Couldn't get distance: "));
       Serial.println(tof.vl_status);
       return;
     }
     sendPacket(MSG_PREFIX + MSG_TYPE_TOF + "\n" + WiFi.macAddress() + "\n" + distance);
-
-    // data is read out, time for another reading!
     tof.clearInterrupt();
   }
 }
