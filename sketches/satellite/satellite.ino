@@ -1,5 +1,5 @@
 // Uses libraries:
-// Adafruit VL53L1X
+// Adafruit VL53L1X 3.1.2
 
 #include <WiFi.h>
 #include <AsyncUDP.h>
@@ -50,6 +50,15 @@ AsyncUDP udp;
 IPAddress hub(192, 168, 4, 1);
 String mac_address;
 
+void lowPowerDelay(uint32_t milliseconds) {
+  #ifdef ESP32_S3_DEV_BOARD
+    delay(milliseconds);
+  #else
+    esp_sleep_enable_timer_wakeup(milliseconds * 1000);
+    esp_light_sleep_start();
+  #endif
+}
+
 void waitThenRestart(ErrorCode error_code) {
   // Blink out the error code
   pinMode(LED_PIN, OUTPUT);
@@ -57,14 +66,14 @@ void waitThenRestart(ErrorCode error_code) {
     digitalWrite(LED_PIN, LOW);
     delay(10);
     digitalWrite(LED_PIN, HIGH);
-    esp_sleep_enable_timer_wakeup(300000);
-    esp_light_sleep_start();
+    lowPowerDelay(300);
   }
 
-  Serial.println("Restarting...");
+  Serial.println("Waiting to restart...");
   Serial.flush();
-  esp_sleep_enable_timer_wakeup(10 * 1000000); // light sleep for 10 seconds
-  esp_light_sleep_start();
+  lowPowerDelay(10000);
+  Serial.println("Restarting");
+  Serial.flush();
   ESP.restart();
 }
 
@@ -128,13 +137,13 @@ void setup() {
 void ensureStillConnected() {
   if (!WiFi.isConnected()) {
     Serial.println("WiFi disconnected");
+    Serial.flush();
     for (uint8_t attempt = 0; attempt < 3; attempt++) {
       if (WiFi.reconnect()) {
         return;
       }
       Serial.flush();
-      esp_sleep_enable_timer_wakeup(1000000); // light sleep for 1 second
-      esp_light_sleep_start();
+      lowPowerDelay(1000);
     }
     Serial.println("Could not reconnect WiFi");
     waitThenRestart(ErrorCode::WifiReconectionFailure);
@@ -159,7 +168,7 @@ void loop() {
       Serial.println(tof.vl_status);
       return;
     }
-    sendPacket(MSG_PREFIX + MSG_TYPE_TOF + "\n" + WiFi.macAddress() + "\n" + distance);
+    sendPacket(MSG_PREFIX + MSG_TYPE_TOF + "\n" + distance);
     tof.clearInterrupt();
   }
 }

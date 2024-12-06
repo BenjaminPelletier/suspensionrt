@@ -89,18 +89,10 @@ void onUDPPacket(AsyncUDPPacket packet)
     msg += n_line;
     n -= n_line;
 
-    // Parse sender from second line
-    n_line = scanLine(msg, n, buffer);
-    if (n_line != MAC_ADDRESS_LENGTH + 1) {
-        Serial.print("UDP message had invalid sender: '");
-        Serial.print(buffer);
-        Serial.println("'");
-        return;
-    }
-    msg += n_line;
-    n -= n_line;
-
     // Match sender to satellite
+    uint8_t mac[6];
+    packet.remoteMac(mac);
+    sprintf(buffer, "%02X:%02X:%02X:%02X:%02X:%02X", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
     Satellite* satellite = get_satellite_by_id(buffer);
 
     // Assign satellite to wheel, if needed
