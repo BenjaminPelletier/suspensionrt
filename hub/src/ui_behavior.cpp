@@ -11,6 +11,8 @@ mstime_t next_millis;
 struct WheelUI {
     lv_obj_t* lblDistance;
 
+    lv_obj_t* ctnrGap;
+
     lv_obj_t* imgWifi;
     mstime_t last_wifi_toggle;
     bool wifi_visible;
@@ -24,18 +26,22 @@ WheelUI wheel_uis[N_WHEELS];
 void init_ui_behavior() {
     wheel_uis[0] = {
         .lblDistance = ui_lblLeftRear,
+        .ctnrGap = ui_ctnrLeftRearGap,
         .imgWifi = ui_imgLeftRearWifi,
     };
     wheel_uis[1] = {
         .lblDistance = ui_lblLeftFront,
+        .ctnrGap = ui_ctnrLeftFrontGap,
         .imgWifi = ui_imgLeftFrontWifi,
     };
     wheel_uis[2] = {
         .lblDistance = ui_lblRightRear,
+        .ctnrGap = ui_ctnrRightRearGap,
         .imgWifi = ui_imgRightRearWifi,
     };
     wheel_uis[3] = {
         .lblDistance = ui_lblRightFront,
+        .ctnrGap = ui_ctnrRightFrontGap,
         .imgWifi = ui_imgRightFrontWifi,
     };
 }
@@ -62,8 +68,19 @@ void ui_behavior_tick(const mstime_t now) {
             lv_label_set_text(wheel_uis[w].lblDistance, "???");
         } else {
             if (wheel->satellite->t_report > wheel->t_last_report) {
-                sprintf(text_buffer, "%d", wheel->satellite->distance);
+                int dist = wheel->satellite->distance;
+                sprintf(text_buffer, "%d", dist);
                 lv_label_set_text(wheel_uis[w].lblDistance, text_buffer);
+
+                int32_t percent_height;
+                if (dist < wheel->fully_compressed_distance) {
+                    percent_height = 0;
+                } else if (dist > wheel->fully_extended_distance) {
+                    percent_height = 100;
+                } else {
+                    percent_height = (int32_t)100 * (dist - wheel->fully_compressed_distance) / (wheel->fully_extended_distance - wheel->fully_compressed_distance);
+                }
+                lv_obj_set_height(wheel_uis[w].ctnrGap, lv_pct(percent_height));
 
                 if (now - wheel_uis[w].last_wifi_toggle >= WIFI_TOGGLE_PERIOD) {
                     lv_obj_update_flag(wheel_uis[w].imgWifi, LV_OBJ_FLAG_HIDDEN, wheel_uis[w].wifi_visible);

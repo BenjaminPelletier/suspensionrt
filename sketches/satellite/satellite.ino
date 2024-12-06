@@ -6,15 +6,36 @@
 #include <Adafruit_VL53L1X.h>
 #include "wifi_info.h"
 
+#define TOF_ADDRESS 0x29
+
+// Board type
+// #define ESP32_LITE_CHARGER
+#define ESP32_S3_DEV_BOARD
+
+#ifdef ESP32_LITE_CHARGER
+
 #define TOF_PIN_VIN -1
 #define TOF_PIN_GND 19
 #define TOF_PIN_SDA 23
 #define TOF_PIN_SCL 18
 #define TOF_PIN_INT 5
 #define TOF_PIN_XSHUT 17
-#define TOF_ADDRESS 0x29
 
 #define LED_PIN 22
+
+#endif
+#ifdef ESP32_S3_DEV_BOARD
+
+#define TOF_PIN_VIN 4
+#define TOF_PIN_GND 5
+#define TOF_PIN_SDA 6
+#define TOF_PIN_SCL 7
+#define TOF_PIN_INT 15
+#define TOF_PIN_XSHUT 16
+
+#define LED_PIN 17 // No actual LED -- built-in LED is not addressable with single GPIO line
+
+#endif
 
 enum ErrorCode : uint8_t {
   WifiConectionFailure = 1,

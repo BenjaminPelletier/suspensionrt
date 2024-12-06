@@ -8,6 +8,8 @@ struct Wheel {
     Satellite* satellite = nullptr;
     char last_satellite_id[MAX_SATELLITE_ID_LENGTH + 1];
     mstime_t t_last_report = 0;
+    uint16_t fully_compressed_distance = 0;
+    uint16_t fully_extended_distance = 1000;
 };
 
 void init_wheels();
