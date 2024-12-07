@@ -9,6 +9,7 @@
 mstime_t next_millis;
 
 struct WheelUIElements {
+    lv_obj_t* ctnrWheel;
     lv_obj_t* lblDistance;
     lv_obj_t* ctnrGap;
     lv_obj_t* imgWifi;
@@ -26,28 +27,45 @@ const mstime_t TEXT_PERSISTENCE_PERIOD = 300;
 const length_t N_WHEELS = 4;
 WheelUIElements wheel_ui_elements[N_WHEELS];
 WheelUIState wheel_ui_states[N_WHEELS];
+uint8_t ui_senders[] = {0, 1, 2, 3};
 
+void ctnrWheel_Click(lv_event_t* e)
+{
+    uint8_t w = *(uint8_t*)lv_event_get_user_data(e);
+    lv_label_set_text(ui_lblStatus3, "wheel " + w);
+}
+
+// Note: This function must not be called until the UI elements have been initialized
 void init_ui_behavior() {
     wheel_ui_elements[0] = {
+        .ctnrWheel = ui_ctnrLeftRear,
         .lblDistance = ui_lblLeftRear,
         .ctnrGap = ui_ctnrLeftRearGap,
         .imgWifi = ui_imgLeftRearWifi,
     };
     wheel_ui_elements[1] = {
+        .ctnrWheel = ui_ctnrLeftFront,
         .lblDistance = ui_lblLeftFront,
         .ctnrGap = ui_ctnrLeftFrontGap,
         .imgWifi = ui_imgLeftFrontWifi,
     };
     wheel_ui_elements[2] = {
-        .lblDistance = ui_lblRightRear,
-        .ctnrGap = ui_ctnrRightRearGap,
-        .imgWifi = ui_imgRightRearWifi,
-    };
-    wheel_ui_elements[3] = {
+        .ctnrWheel = ui_ctnrRightFront,
         .lblDistance = ui_lblRightFront,
         .ctnrGap = ui_ctnrRightFrontGap,
         .imgWifi = ui_imgRightFrontWifi,
     };
+    wheel_ui_elements[3] = {
+        .ctnrWheel = ui_ctnrRightRear,
+        .lblDistance = ui_lblRightRear,
+        .ctnrGap = ui_ctnrRightRearGap,
+        .imgWifi = ui_imgRightRearWifi,
+    };
+
+    for (uint8_t w = 0; w < N_WHEELS; w++) {
+        lv_obj_add_flag(wheel_ui_elements[w].ctnrWheel, LV_OBJ_FLAG_CLICKABLE);
+        lv_obj_add_event_cb(wheel_ui_elements[w].ctnrWheel, ctnrWheel_Click, LV_EVENT_CLICKED, (void*)(ui_senders + w));
+    }
 }
 
 void ui_behavior_tick(const mstime_t now) {
