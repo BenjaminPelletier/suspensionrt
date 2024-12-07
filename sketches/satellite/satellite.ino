@@ -138,14 +138,6 @@ void ensureStillConnected() {
   if (!WiFi.isConnected()) {
     Serial.println("WiFi disconnected");
     Serial.flush();
-    for (uint8_t attempt = 0; attempt < 3; attempt++) {
-      if (WiFi.reconnect()) {
-        return;
-      }
-      Serial.flush();
-      lowPowerDelay(1000);
-    }
-    Serial.println("Could not reconnect WiFi");
     waitThenRestart(ErrorCode::WifiReconectionFailure);
   }
 }

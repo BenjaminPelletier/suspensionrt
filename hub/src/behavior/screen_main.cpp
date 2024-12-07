@@ -23,14 +23,14 @@ struct WheelUIState {
 const mstime_t WIFI_TOGGLE_PERIOD = 200;
 const mstime_t TEXT_PERSISTENCE_PERIOD = 300;
 
-const length_t N_WHEELS = 4;
 WheelUIElements wheel_ui_elements[N_WHEELS];
 WheelUIState wheel_ui_states[N_WHEELS];
-uint8_t ui_senders[] = {0, 1, 2, 3};
+static uint8_t ui_senders[N_WHEELS] = {0, 1, 2, 3};
 
 void ctnrWheel_Click(lv_event_t* e)
 {
     current_wheel = *(uint8_t*)lv_event_get_user_data(e);
+    Serial.println("ctnrWheel_Click lv_disp_load_scr");
     lv_disp_load_scr(ui_scrWheel);
 }
 

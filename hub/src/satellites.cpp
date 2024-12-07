@@ -24,3 +24,11 @@ Satellite* get_satellite_by_id(char* id) {
     }
     return &satellites[s];
 }
+
+Satellite* get_satellite_by_index(uint8_t index) {
+    if (index < n_satellites) {
+        return &satellites[index];
+    } else {
+        return nullptr;
+    }
+}

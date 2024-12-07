@@ -14,4 +14,6 @@ struct Satellite
 
 Satellite* get_satellite_by_id(char* id);
 
+Satellite* get_satellite_by_index(uint8_t index);
+
 #endif

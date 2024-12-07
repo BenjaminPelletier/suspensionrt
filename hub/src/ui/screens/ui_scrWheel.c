@@ -28,7 +28,7 @@ void ui_scrWheel_screen_init(void)
 
     ui_ddSelectedWheel = lv_dropdown_create(ui_pnlWheel);
     lv_dropdown_set_options(ui_ddSelectedWheel, "Rear left\nFront left\nFront right\nRear right");
-    lv_obj_set_width(ui_ddSelectedWheel, 140);
+    lv_obj_set_width(ui_ddSelectedWheel, 120);
     lv_obj_set_height(ui_ddSelectedWheel, LV_SIZE_CONTENT);    /// 1
     lv_obj_set_x(ui_ddSelectedWheel, 50);
     lv_obj_set_y(ui_ddSelectedWheel, 0);
@@ -36,18 +36,23 @@ void ui_scrWheel_screen_init(void)
 
 
 
-    ui_sbCompressed = lv_spinbox_create(ui_pnlWheel);
-    lv_obj_set_width(ui_sbCompressed, 70);
-    lv_obj_set_height(ui_sbCompressed, 42);
-    lv_obj_set_align(ui_sbCompressed, LV_ALIGN_TOP_RIGHT);
-    lv_spinbox_set_digit_format(ui_sbCompressed, 4, 0);
-    lv_spinbox_set_range(ui_sbCompressed, 0, 2000);
-    lv_spinbox_set_cursor_pos(ui_sbCompressed, 1 - 1);
+    ui_taCompressed = lv_textarea_create(ui_pnlWheel);
+    lv_obj_set_width(ui_taCompressed, 60);
+    lv_obj_set_height(ui_taCompressed, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_align(ui_taCompressed, LV_ALIGN_TOP_RIGHT);
+    if("0123456789" == "") lv_textarea_set_accepted_chars(ui_taCompressed, NULL);
+    else lv_textarea_set_accepted_chars(ui_taCompressed, "0123456789");
+    lv_textarea_set_max_length(ui_taCompressed, 4);
+    lv_textarea_set_text(ui_taCompressed, "0");
+    lv_textarea_set_placeholder_text(ui_taCompressed, "0");
+    lv_textarea_set_one_line(ui_taCompressed, true);
+
+
 
     ui_ctnrCompressionHeight = lv_obj_create(ui_pnlWheel);
     lv_obj_remove_style_all(ui_ctnrCompressionHeight);
-    lv_obj_set_width(ui_ctnrCompressionHeight, 70);
-    lv_obj_set_height(ui_ctnrCompressionHeight, 100);
+    lv_obj_set_width(ui_ctnrCompressionHeight, 60);
+    lv_obj_set_height(ui_ctnrCompressionHeight, 110);
     lv_obj_set_align(ui_ctnrCompressionHeight, LV_ALIGN_RIGHT_MID);
     lv_obj_remove_flag(ui_ctnrCompressionHeight, LV_OBJ_FLAG_CLICKABLE | LV_OBJ_FLAG_SCROLLABLE);      /// Flags
     lv_obj_set_style_bg_color(ui_ctnrCompressionHeight, lv_color_hex(0xCC2929), LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -76,17 +81,22 @@ void ui_scrWheel_screen_init(void)
     lv_obj_set_style_pad_top(ui_lblGap, 2, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_pad_bottom(ui_lblGap, 2, LV_PART_MAIN | LV_STATE_DEFAULT);
 
-    ui_sbExtended = lv_spinbox_create(ui_pnlWheel);
-    lv_obj_set_width(ui_sbExtended, 70);
-    lv_obj_set_height(ui_sbExtended, 42);
-    lv_obj_set_align(ui_sbExtended, LV_ALIGN_BOTTOM_RIGHT);
-    lv_spinbox_set_digit_format(ui_sbExtended, 4, 0);
-    lv_spinbox_set_range(ui_sbExtended, 0, 2000);
-    lv_spinbox_set_cursor_pos(ui_sbExtended, 1 - 1);
+    ui_taExtended = lv_textarea_create(ui_pnlWheel);
+    lv_obj_set_width(ui_taExtended, 60);
+    lv_obj_set_height(ui_taExtended, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_align(ui_taExtended, LV_ALIGN_BOTTOM_RIGHT);
+    if("0123456789" == "") lv_textarea_set_accepted_chars(ui_taExtended, NULL);
+    else lv_textarea_set_accepted_chars(ui_taExtended, "0123456789");
+    lv_textarea_set_max_length(ui_taExtended, 4);
+    lv_textarea_set_text(ui_taExtended, "500	");
+    lv_textarea_set_placeholder_text(ui_taExtended, "500");
+    lv_textarea_set_one_line(ui_taExtended, true);
+
+
 
     ui_chkSatellite1 = lv_checkbox_create(ui_pnlWheel);
     lv_checkbox_set_text(ui_chkSatellite1, "Satellite 1");
-    lv_obj_set_width(ui_chkSatellite1, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_width(ui_chkSatellite1, 200);
     lv_obj_set_height(ui_chkSatellite1, LV_SIZE_CONTENT);    /// 1
     lv_obj_set_x(ui_chkSatellite1, 0);
     lv_obj_set_y(ui_chkSatellite1, 46);
@@ -94,9 +104,15 @@ void ui_scrWheel_screen_init(void)
     lv_obj_set_style_text_color(ui_chkSatellite1, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_opa(ui_chkSatellite1, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
 
+    ui_lblSatellite1 = lv_label_create(ui_chkSatellite1);
+    lv_obj_set_width(ui_lblSatellite1, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_height(ui_lblSatellite1, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_align(ui_lblSatellite1, LV_ALIGN_RIGHT_MID);
+    lv_label_set_text(ui_lblSatellite1, "???");
+
     ui_chkSatellite2 = lv_checkbox_create(ui_pnlWheel);
     lv_checkbox_set_text(ui_chkSatellite2, "Satellite 2");
-    lv_obj_set_width(ui_chkSatellite2, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_width(ui_chkSatellite2, 200);
     lv_obj_set_height(ui_chkSatellite2, LV_SIZE_CONTENT);    /// 1
     lv_obj_set_x(ui_chkSatellite2, 0);
     lv_obj_set_y(ui_chkSatellite2, 72);
@@ -104,9 +120,15 @@ void ui_scrWheel_screen_init(void)
     lv_obj_set_style_text_color(ui_chkSatellite2, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_opa(ui_chkSatellite2, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
 
+    ui_lblSatellite2 = lv_label_create(ui_chkSatellite2);
+    lv_obj_set_width(ui_lblSatellite2, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_height(ui_lblSatellite2, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_align(ui_lblSatellite2, LV_ALIGN_RIGHT_MID);
+    lv_label_set_text(ui_lblSatellite2, "???");
+
     ui_chkSatellite3 = lv_checkbox_create(ui_pnlWheel);
     lv_checkbox_set_text(ui_chkSatellite3, "Satellite 3");
-    lv_obj_set_width(ui_chkSatellite3, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_width(ui_chkSatellite3, 200);
     lv_obj_set_height(ui_chkSatellite3, LV_SIZE_CONTENT);    /// 1
     lv_obj_set_x(ui_chkSatellite3, 0);
     lv_obj_set_y(ui_chkSatellite3, 98);
@@ -114,9 +136,15 @@ void ui_scrWheel_screen_init(void)
     lv_obj_set_style_text_color(ui_chkSatellite3, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_opa(ui_chkSatellite3, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
 
+    ui_lblSatellite3 = lv_label_create(ui_chkSatellite3);
+    lv_obj_set_width(ui_lblSatellite3, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_height(ui_lblSatellite3, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_align(ui_lblSatellite3, LV_ALIGN_RIGHT_MID);
+    lv_label_set_text(ui_lblSatellite3, "???");
+
     ui_chkSatellite4 = lv_checkbox_create(ui_pnlWheel);
     lv_checkbox_set_text(ui_chkSatellite4, "Satellite 4");
-    lv_obj_set_width(ui_chkSatellite4, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_width(ui_chkSatellite4, 200);
     lv_obj_set_height(ui_chkSatellite4, LV_SIZE_CONTENT);    /// 1
     lv_obj_set_x(ui_chkSatellite4, 0);
     lv_obj_set_y(ui_chkSatellite4, 124);
@@ -124,6 +152,11 @@ void ui_scrWheel_screen_init(void)
     lv_obj_set_style_text_color(ui_chkSatellite4, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_opa(ui_chkSatellite4, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
 
+    ui_lblSatellite4 = lv_label_create(ui_chkSatellite4);
+    lv_obj_set_width(ui_lblSatellite4, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_height(ui_lblSatellite4, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_align(ui_lblSatellite4, LV_ALIGN_RIGHT_MID);
+    lv_label_set_text(ui_lblSatellite4, "???");
 
 
 }

@@ -41,15 +41,19 @@ lv_obj_t * ui_scrWheel;
 lv_obj_t * ui_pnlWheel;
 lv_obj_t * ui_btnWheelBack;
 lv_obj_t * ui_ddSelectedWheel;
-lv_obj_t * ui_sbCompressed;
+lv_obj_t * ui_taCompressed;
 lv_obj_t * ui_ctnrCompressionHeight;
 lv_obj_t * ui_ctnrGap;
 lv_obj_t * ui_lblGap;
-lv_obj_t * ui_sbExtended;
+lv_obj_t * ui_taExtended;
 lv_obj_t * ui_chkSatellite1;
+lv_obj_t * ui_lblSatellite1;
 lv_obj_t * ui_chkSatellite2;
+lv_obj_t * ui_lblSatellite2;
 lv_obj_t * ui_chkSatellite3;
+lv_obj_t * ui_lblSatellite3;
 lv_obj_t * ui_chkSatellite4;
+lv_obj_t * ui_lblSatellite4;
 // CUSTOM VARIABLES
 
 // EVENTS

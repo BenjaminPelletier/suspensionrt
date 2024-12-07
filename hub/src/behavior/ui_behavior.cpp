@@ -4,18 +4,18 @@
 
 #include "../ui/ui.h"
 #include "screen_main.h"
-
-uint8_t currentWheel;
-
-void scrWheel_Loaded(lv_event_t* e) {
-    Serial.println("scrWheel loaded");
-}
+#include "screen_wheel.h"
 
 void init_ui_behavior() {
     init_main_screen_behavior();
-    lv_obj_add_event_cb(ui_scrWheel, scrWheel_Loaded, LV_EVENT_SCREEN_LOADED, NULL);
+    init_wheel_screen_behavior();
 }
 
 void ui_behavior_tick(const mstime_t now) {
-    main_screen_behavior_tick(now);
+    lv_obj_t* active_screen = lv_screen_active();
+    if (active_screen == ui_scrMain) {
+        main_screen_behavior_tick(now);
+    } else if (active_screen == ui_scrWheel) {
+        wheel_screen_behavior_tick(now);
+    }
 }

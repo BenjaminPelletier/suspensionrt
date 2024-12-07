@@ -3,7 +3,6 @@
 #include <string.h>
 #include "common.h"
 
-const length_t N_WHEELS = 4;
 Wheel wheels[N_WHEELS];
 
 void init_wheels() {
