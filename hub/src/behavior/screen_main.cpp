@@ -1,12 +1,11 @@
-#include "ui_behavior.h"
+#include "screen_main.h"
 
 #include <esp32_smartdisplay.h>
 
-#include "common.h"
-#include "ui/ui.h"
-#include "wheels.h"
-
-mstime_t next_millis;
+#include "intrascreen.h"
+#include "../common.h"
+#include "../ui/ui.h"
+#include "../wheels.h"
 
 struct WheelUIElements {
     lv_obj_t* ctnrWheel;
@@ -29,20 +28,13 @@ WheelUIElements wheel_ui_elements[N_WHEELS];
 WheelUIState wheel_ui_states[N_WHEELS];
 uint8_t ui_senders[] = {0, 1, 2, 3};
 
-uint8_t currentWheel;
-
 void ctnrWheel_Click(lv_event_t* e)
 {
-    currentWheel = *(uint8_t*)lv_event_get_user_data(e);
+    current_wheel = *(uint8_t*)lv_event_get_user_data(e);
     lv_disp_load_scr(ui_scrWheel);
 }
 
-void scrWheel_Loaded(lv_event_t* e) {
-    Serial.println("scrWheel loaded");
-}
-
-// Note: This function must not be called until the UI elements have been initialized
-void init_ui_behavior() {
+void init_main_screen_behavior() {
     wheel_ui_elements[0] = {
         .ctnrWheel = ui_ctnrLeftRear,
         .lblDistance = ui_lblLeftRear,
@@ -72,11 +64,11 @@ void init_ui_behavior() {
         lv_obj_add_flag(wheel_ui_elements[w].ctnrWheel, LV_OBJ_FLAG_CLICKABLE);
         lv_obj_add_event_cb(wheel_ui_elements[w].ctnrWheel, ctnrWheel_Click, LV_EVENT_CLICKED, (void*)(ui_senders + w));
     }
-
-    lv_obj_add_event_cb(ui_scrWheel, scrWheel_Loaded, LV_EVENT_SCREEN_LOADED, NULL);
 }
 
-void ui_behavior_tick(const mstime_t now) {
+mstime_t next_millis;
+
+void main_screen_behavior_tick(const mstime_t now) {
     char text_buffer[32];
 
     if (now > next_millis)

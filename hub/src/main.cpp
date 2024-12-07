@@ -9,7 +9,7 @@
 #include "comms/ap.h"
 #include "comms/server/server.h"
 #include "comms/udp.h"
-#include "ui_behavior.h"
+#include "behavior/ui_behavior.h"
 
 void setup()
 {
