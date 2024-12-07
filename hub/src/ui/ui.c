@@ -13,7 +13,6 @@
 void ui_scrMain_screen_init(void);
 lv_obj_t * ui_scrMain;
 lv_obj_t * ui_pnlMain;
-lv_obj_t * ui_btnHamburger;
 lv_obj_t * ui_ctnrLeftRear;
 lv_obj_t * ui_ctnrLeftRearGap;
 lv_obj_t * ui_lblLeftRear;
@@ -33,6 +32,24 @@ lv_obj_t * ui_imgRightFrontWifi;
 lv_obj_t * ui_lblStatus1;
 lv_obj_t * ui_lblStatus2;
 lv_obj_t * ui_lblStatus3;
+// CUSTOM VARIABLES
+
+
+// SCREEN: ui_scrWheel
+void ui_scrWheel_screen_init(void);
+lv_obj_t * ui_scrWheel;
+lv_obj_t * ui_pnlWheel;
+lv_obj_t * ui_btnWheelBack;
+lv_obj_t * ui_ddSelectedWheel;
+lv_obj_t * ui_sbCompressed;
+lv_obj_t * ui_ctnrCompressionHeight;
+lv_obj_t * ui_ctnrGap;
+lv_obj_t * ui_lblGap;
+lv_obj_t * ui_sbExtended;
+lv_obj_t * ui_chkSatellite1;
+lv_obj_t * ui_chkSatellite2;
+lv_obj_t * ui_chkSatellite3;
+lv_obj_t * ui_chkSatellite4;
 // CUSTOM VARIABLES
 
 // EVENTS
@@ -58,6 +75,7 @@ void ui_init(void)
                                                false, LV_FONT_DEFAULT);
     lv_disp_set_theme(dispp, theme);
     ui_scrMain_screen_init();
+    ui_scrWheel_screen_init();
     ui____initial_actions0 = lv_obj_create(NULL);
     lv_disp_load_scr(ui_scrMain);
 }

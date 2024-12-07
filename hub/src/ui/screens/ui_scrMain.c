@@ -20,12 +20,6 @@ void ui_scrMain_screen_init(void)
     lv_obj_set_style_bg_color(ui_pnlMain, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_bg_opa(ui_pnlMain, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
 
-    ui_btnHamburger = lv_button_create(ui_pnlMain);
-    lv_obj_set_width(ui_btnHamburger, 32);
-    lv_obj_set_height(ui_btnHamburger, 32);
-    lv_obj_add_flag(ui_btnHamburger, LV_OBJ_FLAG_SCROLL_ON_FOCUS);     /// Flags
-    lv_obj_remove_flag(ui_btnHamburger, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
-
     ui_ctnrLeftRear = lv_obj_create(ui_pnlMain);
     lv_obj_remove_style_all(ui_ctnrLeftRear);
     lv_obj_set_width(ui_ctnrLeftRear, 56);

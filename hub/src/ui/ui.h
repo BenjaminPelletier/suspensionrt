@@ -20,7 +20,6 @@ extern "C" {
 void ui_scrMain_screen_init(void);
 extern lv_obj_t * ui_scrMain;
 extern lv_obj_t * ui_pnlMain;
-extern lv_obj_t * ui_btnHamburger;
 extern lv_obj_t * ui_ctnrLeftRear;
 extern lv_obj_t * ui_ctnrLeftRearGap;
 extern lv_obj_t * ui_lblLeftRear;
@@ -40,6 +39,23 @@ extern lv_obj_t * ui_imgRightFrontWifi;
 extern lv_obj_t * ui_lblStatus1;
 extern lv_obj_t * ui_lblStatus2;
 extern lv_obj_t * ui_lblStatus3;
+// CUSTOM VARIABLES
+
+// SCREEN: ui_scrWheel
+void ui_scrWheel_screen_init(void);
+extern lv_obj_t * ui_scrWheel;
+extern lv_obj_t * ui_pnlWheel;
+extern lv_obj_t * ui_btnWheelBack;
+extern lv_obj_t * ui_ddSelectedWheel;
+extern lv_obj_t * ui_sbCompressed;
+extern lv_obj_t * ui_ctnrCompressionHeight;
+extern lv_obj_t * ui_ctnrGap;
+extern lv_obj_t * ui_lblGap;
+extern lv_obj_t * ui_sbExtended;
+extern lv_obj_t * ui_chkSatellite1;
+extern lv_obj_t * ui_chkSatellite2;
+extern lv_obj_t * ui_chkSatellite3;
+extern lv_obj_t * ui_chkSatellite4;
 // CUSTOM VARIABLES
 
 // EVENTS

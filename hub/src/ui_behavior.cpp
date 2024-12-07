@@ -29,10 +29,16 @@ WheelUIElements wheel_ui_elements[N_WHEELS];
 WheelUIState wheel_ui_states[N_WHEELS];
 uint8_t ui_senders[] = {0, 1, 2, 3};
 
+uint8_t currentWheel;
+
 void ctnrWheel_Click(lv_event_t* e)
 {
-    uint8_t w = *(uint8_t*)lv_event_get_user_data(e);
-    lv_label_set_text(ui_lblStatus3, "wheel " + w);
+    currentWheel = *(uint8_t*)lv_event_get_user_data(e);
+    lv_disp_load_scr(ui_scrWheel);
+}
+
+void scrWheel_Loaded(lv_event_t* e) {
+    Serial.println("scrWheel loaded");
 }
 
 // Note: This function must not be called until the UI elements have been initialized
@@ -66,6 +72,8 @@ void init_ui_behavior() {
         lv_obj_add_flag(wheel_ui_elements[w].ctnrWheel, LV_OBJ_FLAG_CLICKABLE);
         lv_obj_add_event_cb(wheel_ui_elements[w].ctnrWheel, ctnrWheel_Click, LV_EVENT_CLICKED, (void*)(ui_senders + w));
     }
+
+    lv_obj_add_event_cb(ui_scrWheel, scrWheel_Loaded, LV_EVENT_SCREEN_LOADED, NULL);
 }
 
 void ui_behavior_tick(const mstime_t now) {
