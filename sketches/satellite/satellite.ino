@@ -9,17 +9,17 @@
 #define TOF_ADDRESS 0x29
 
 // Board type
-// #define ESP32_LITE_CHARGER
-#define ESP32_S3_DEV_BOARD
+#define ESP32_LITE_CHARGER
+// #define ESP32_S3_DEV_BOARD
 
 #ifdef ESP32_LITE_CHARGER
 
-#define TOF_PIN_VIN -1
-#define TOF_PIN_GND 19
-#define TOF_PIN_SDA 23
+#define TOF_PIN_VIN 16
+#define TOF_PIN_GND 17
+#define TOF_PIN_SDA 5
 #define TOF_PIN_SCL 18
-#define TOF_PIN_INT 5
-#define TOF_PIN_XSHUT 17
+#define TOF_PIN_INT 23
+#define TOF_PIN_XSHUT 19
 
 #define LED_PIN 22
 
