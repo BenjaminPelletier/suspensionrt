@@ -3,6 +3,7 @@
 #include <Arduino.h>
 #include <lvgl.h>
 #include "intrascreen.h"
+#include "../persistence.h"
 #include "../ui/ui.h"
 #include "../wheels.h"
 
@@ -87,6 +88,7 @@ void ta_Confirm(lv_event_t* e) {
     } else {
         Serial.println("???");
     }
+    store_wheel_settings();
 
     lv_obj_remove_state(ta, LV_STATE_FOCUSED);
     ta_Defocused(e);  // TODO: Fix (https://forum.lvgl.io/t/19260)
@@ -96,6 +98,7 @@ void set_selected_wheel(uint8_t w) {
     lv_dropdown_set_selected(ui_ddSelectedWheel, w);
     Wheel* wheel = get_wheel(w);
     if (wheel != nullptr) {
+        current_wheel = w;
         for (uint8_t s = 0; s < MAX_SATELLITES; s++) {
             Satellite* satellite = get_satellite_by_index(s);
             if (wheel->satellite == satellite) {
@@ -161,6 +164,8 @@ void chkSatellite_ValueChanged(lv_event_t* e) {
     }
     Wheel* wheel = get_wheel(current_wheel);
     wheel->satellite = satellite;
+    strncpy(wheel->last_satellite_id, satellite->id, MAX_SATELLITE_ID_LENGTH);
+    store_wheel_settings();
     for (uint8_t s = 0; s < MAX_SATELLITES; s++) {
         if (s == satellite_index) {
             lv_obj_add_state(satellite_ui_elements[s].chkSatellite, LV_STATE_CHECKED);

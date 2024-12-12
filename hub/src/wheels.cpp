@@ -2,14 +2,9 @@
 
 #include <string.h>
 #include "common.h"
+#include "persistence.h"
 
 Wheel wheels[N_WHEELS];
-
-void init_wheels() {
-    for (uint8_t w = 0; w < N_WHEELS; w++) {
-        wheels[w].last_satellite_id[0] = 0;
-    }
-}
 
 void maybe_assign_satellite_to_wheel(Satellite* satellite) {
     if (satellite == nullptr) { return; }
@@ -43,6 +38,7 @@ void maybe_assign_satellite_to_wheel(Satellite* satellite) {
         // Associate this satellite with the wheel of the identified index
         wheels[w].satellite = satellite;
         strncpy(wheels[w].last_satellite_id, satellite->id, MAX_SATELLITE_ID_LENGTH);
+        store_wheel_settings();
     }
 }
 

@@ -10,6 +10,7 @@
 #include "comms/server/server.h"
 #include "comms/udp.h"
 #include "behavior/ui_behavior.h"
+#include "persistence.h"
 
 void setup()
 {
@@ -38,6 +39,10 @@ void setup()
     lv_disp_set_rotation(disp, LV_DISPLAY_ROTATION_270);
 
     ui_init();
+
+    init_persistence();
+    restore_wheel_settings();
+
     init_ui_behavior();
 
     init_ap();

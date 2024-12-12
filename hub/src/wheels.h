@@ -12,8 +12,6 @@ struct Wheel {
     uint16_t fully_extended_distance = 1000;
 };
 
-void init_wheels();
-
 void maybe_assign_satellite_to_wheel(Satellite* satellite);
 
 Wheel* get_wheel_of_satellite(Satellite* satellite);
