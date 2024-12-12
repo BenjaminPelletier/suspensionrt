@@ -1,6 +1,7 @@
 #include "screen_wheel.h"
 
 #include <Arduino.h>
+#include <lvgl.h>
 #include "intrascreen.h"
 #include "../ui/ui.h"
 #include "../wheels.h"
@@ -21,6 +22,76 @@ SatelliteUIState satellite_ui_state[MAX_SATELLITES];
 
 static uint8_t ui_senders[MAX_SATELLITES] = {0, 1, 2, 3};
 
+lv_obj_t* btnmtxKeypad;
+lv_obj_t* taSelected = nullptr;
+
+void ta_Focused(lv_event_t* e) {
+    Serial.println("ta_Focused");
+    taSelected = (lv_obj_t*)lv_event_get_user_data(e);
+
+    lv_obj_update_flag(btnmtxKeypad, LV_OBJ_FLAG_HIDDEN, false);
+
+    lv_textarea_set_text_selection(taSelected, true);
+    length_t n = strlen(lv_textarea_get_text(taSelected));
+    lv_obj_t* ta_label = lv_textarea_get_label(taSelected);
+    lv_label_set_text_selection_start(ta_label, 0);
+    lv_label_set_text_selection_end(ta_label, n);
+    lv_textarea_set_text_selection(taSelected, true);
+
+    Serial.print("Selected 0 to "); Serial.println(n);
+}
+
+void ta_Defocused(lv_event_t* e) {
+    Serial.println("ta_Defocused");
+    lv_obj_t* ta = (lv_obj_t*)lv_event_get_user_data(e);
+
+    Wheel* wheel = get_wheel(current_wheel);
+    uint16_t dist = 0;
+    if (ta == ui_taCompressed) {
+        dist = wheel->fully_compressed_distance;
+    } else if (ta == ui_taExtended) {
+        dist = wheel->fully_extended_distance;
+    }
+    lv_textarea_set_text_selection(ta, false);
+    char text_buffer[5];
+    lv_textarea_set_text(ta, itoa(dist, text_buffer, 10));
+
+    taSelected = nullptr;
+    lv_obj_update_flag(btnmtxKeypad, LV_OBJ_FLAG_HIDDEN, true);
+}
+
+void btnmtxKeypad_Click(lv_event_t * e)
+{
+    if (taSelected == nullptr) {
+        return;  // Should never happen, but just to be safe
+    }
+
+    const char* txt = lv_buttonmatrix_get_button_text(btnmtxKeypad, lv_buttonmatrix_get_selected_button(btnmtxKeypad));
+
+    if(lv_strcmp(txt, LV_SYMBOL_BACKSPACE) == 0) lv_textarea_delete_char(taSelected);
+    else if(lv_strcmp(txt, LV_SYMBOL_NEW_LINE) == 0) lv_obj_send_event(taSelected, LV_EVENT_READY, NULL);
+    else lv_textarea_add_text(taSelected, txt);
+}
+
+void ta_Confirm(lv_event_t* e) {
+    Serial.println("ta_Confirm");
+    lv_obj_t* ta = (lv_obj_t*)lv_event_get_user_data(e);
+
+    Wheel* wheel = get_wheel(current_wheel);
+    if (ta == ui_taCompressed) {
+        wheel->fully_compressed_distance = atoi(lv_textarea_get_text(ui_taCompressed));
+    } else if (ta == ui_taExtended) {
+        wheel->fully_extended_distance = atoi(lv_textarea_get_text(ui_taExtended));
+    } else if (ta == nullptr) {
+        return;  // Should never happen, but just to be safe
+    } else {
+        Serial.println("???");
+    }
+
+    lv_obj_remove_state(ta, LV_STATE_FOCUSED);
+    ta_Defocused(e);  // TODO: Fix (https://forum.lvgl.io/t/19260)
+}
+
 void set_selected_wheel(uint8_t w) {
     lv_dropdown_set_selected(ui_ddSelectedWheel, w);
     Wheel* wheel = get_wheel(w);
@@ -33,6 +104,10 @@ void set_selected_wheel(uint8_t w) {
                 lv_obj_remove_state(satellite_ui_elements[s].chkSatellite, LV_STATE_CHECKED);
             }
         }
+        
+        char text_buffer[5];
+        lv_textarea_set_text(ui_taCompressed, itoa(wheel->fully_compressed_distance, text_buffer, 10));
+        lv_textarea_set_text(ui_taExtended, itoa(wheel->fully_extended_distance, text_buffer, 10));
     }
 }
 
@@ -44,6 +119,23 @@ void scrWheel_Loaded(lv_event_t* e) {
             lv_checkbox_set_text(satellite_ui_elements[s].chkSatellite, satellite->id);
         }
     }
+
+    btnmtxKeypad = lv_buttonmatrix_create(lv_screen_active());
+    lv_obj_update_flag(btnmtxKeypad, LV_OBJ_FLAG_HIDDEN, true);
+    lv_obj_set_size(btnmtxKeypad, 200, 240);
+    lv_obj_align(btnmtxKeypad, LV_ALIGN_LEFT_MID, 0, 0);
+    lv_obj_add_event_cb(btnmtxKeypad, btnmtxKeypad_Click, LV_EVENT_VALUE_CHANGED, NULL);
+    lv_obj_remove_flag(btnmtxKeypad, LV_OBJ_FLAG_CLICK_FOCUSABLE);  // Keep the text area focused on button clicks
+    lv_buttonmatrix_set_map(btnmtxKeypad, BUTTON_MAP_NUMERIC);
+
+    lv_obj_add_event_cb(ui_taCompressed, ta_Confirm, LV_EVENT_READY, ui_taCompressed);
+    lv_obj_add_event_cb(ui_taCompressed, ta_Focused, LV_EVENT_FOCUSED, ui_taCompressed);
+    lv_obj_add_event_cb(ui_taCompressed, ta_Defocused, LV_EVENT_DEFOCUSED, ui_taCompressed);
+
+    lv_obj_add_event_cb(ui_taExtended, ta_Confirm, LV_EVENT_READY, ui_taExtended);
+    lv_obj_add_event_cb(ui_taExtended, ta_Focused, LV_EVENT_FOCUSED, ui_taExtended);
+    lv_obj_add_event_cb(ui_taExtended, ta_Defocused, LV_EVENT_DEFOCUSED, ui_taExtended);
+
     set_selected_wheel(current_wheel);
 }
 
